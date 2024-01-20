@@ -2,11 +2,10 @@ version: '3.1'
 services:
   stats-server:
     build: stats-service/server
-    image: server
+    image: stats-server-image
     container_name: stats-server
     ports:
       - "9090:9090"
-      - "9091:9091"
     depends_on:
       - stats-db
     environment:
@@ -20,14 +19,14 @@ services:
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_PASSWORD=ewm
-      - POSTGRES_USER=ewm
       - POSTGRES_DB=stats-db
+      - POSTGRES_USER=ewm
+      - POSTGRES_PASSWORD=ewm
 
   ewm-service:
     build: main-service
-    image: main-service
-    container_name: main-service
+    image: ewm-main-service-image
+    container_name: ewm-main-service
     ports:
       - "8080:8080"
     depends_on:
@@ -45,6 +44,6 @@ services:
     ports:
       - "6542:5432"
     environment:
-      - POSTGRES_PASSWORD=ewm
-      - POSTGRES_USER=ewm
       - POSTGRES_DB=ewm-db
+      - POSTGRES_USER=ewm
+      - POSTGRES_PASSWORD=ewm
