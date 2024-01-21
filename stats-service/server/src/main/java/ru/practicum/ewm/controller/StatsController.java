@@ -21,13 +21,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 public class StatsController {
-    private final StatsService service;
+    private final StatsService statsService;
 
     @PostMapping("/hit")
     @ResponseStatus(code = HttpStatus.CREATED)
     public void hit(@RequestBody EndpointHit hit) {
         log.info("POST request to save information.");
-        service.saveHit(hit);
+        statsService.saveHit(hit);
     }
 
     @GetMapping("/stats")
@@ -40,7 +40,7 @@ public class StatsController {
             uris = Collections.emptyList();
         }
 
-        return service.getViewStatsList(
+        return statsService.getViewStatsList(
                 ViewsStatsRequest.builder()
                         .start(start)
                         .end(end)
