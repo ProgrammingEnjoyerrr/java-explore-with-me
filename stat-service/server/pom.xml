@@ -25,6 +25,13 @@
         </dependency>
 
         <dependency>
+            <groupId>ru.practicum.ewm</groupId>
+            <artifactId>common-components</artifactId>
+            <version>${project.version}</version>
+<!--            <scope>compile</scope>-->
+        </dependency>
+
+        <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
         </dependency>

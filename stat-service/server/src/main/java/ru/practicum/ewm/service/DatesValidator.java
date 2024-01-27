@@ -2,7 +2,7 @@ package ru.practicum.ewm.service;
 
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
-import ru.practicum.ewm.controller.InvalidDatesException;
+import ru.practicum.ewm.exception.InvalidDatesException;
 
 import java.time.LocalDateTime;
 
