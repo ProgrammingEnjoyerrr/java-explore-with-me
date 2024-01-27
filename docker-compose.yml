@@ -3,26 +3,26 @@ services:
   stat-server:
     build: ./stat-service/server
     image: stat-service
-    container_name: server
+    container_name: stat-service
     ports:
       - "9090:9090"
       - "9091:9091" # remote debug
     depends_on:
-      - statdb
+      - stat-db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://statdb:5432/statdb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://stat-db:5432/stat-db
       - SPRING_DATASOURCE_USERNAME=ewm
       - SPRING_DATASOURCE_PASSWORD=ewm
       - JAVA_OPTS=-Djdk.httpclient.HttpClient.log=errors,requests
 
-  statdb:
+  stat-db:
     image: postgres:14-alpine
     volumes:
       - /var/lib/postgresql/data/
-    container_name: statdb
+    container_name: stat-db
 
     environment:
-      - POSTGRES_DB=statdb
+      - POSTGRES_DB=stat-db
       - POSTGRES_USER=ewm
       - POSTGRES_PASSWORD=ewm
 
@@ -33,21 +33,20 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - ewmdb
+      - ewm-db
       - stat-server
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewmdb:5432/ewmdb
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-db
       - SPRING_DATASOURCE_USERNAME=ewm
       - SPRING_DATASOURCE_PASSWORD=ewm
       - SERVICES_STATSSERVICE_URI=http://stat-server:9090
-    #   - JAVA_OPTS=-Djdk.httpclient.HttpClient.log=errors,requests
 
-  ewmdb:
+  ewm-db:
     image: postgres:14-alpine
     volumes:
       - /var/lib/postgresql/data/
-    container_name: ewmdb
+    container_name: ewm-db
     environment:
-      - POSTGRES_DB=ewmdb
+      - POSTGRES_DB=ewm-db
       - POSTGRES_USER=ewm
       - POSTGRES_PASSWORD=ewm
