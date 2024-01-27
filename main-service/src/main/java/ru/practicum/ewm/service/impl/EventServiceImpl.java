@@ -18,7 +18,7 @@ import ru.practicum.ewm.ViewStats;
 import ru.practicum.ewm.dto.*;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.exception.UncorrectedParametersException;
+import ru.practicum.ewm.exception.IncorrectParametersException;
 import ru.practicum.ewm.model.*;
 import ru.practicum.ewm.model.enums.EventAdminState;
 import ru.practicum.ewm.model.enums.EventStatus;
@@ -114,7 +114,7 @@ public class EventServiceImpl implements EventService {
         LocalDateTime gotEventDate = updateEvent.getEventDate();
         if (gotEventDate != null) {
             if (gotEventDate.isBefore(LocalDateTime.now().plusHours(1))) {
-                throw new UncorrectedParametersException("Некорректные параметры даты.Дата начала " +
+                throw new IncorrectParametersException("Некорректные параметры даты.Дата начала " +
                         "изменяемого события должна " + "быть не ранее чем за час от даты публикации.");
             }
             eventForUpdate.setEventDate(updateEvent.getEventDate());
@@ -284,7 +284,7 @@ public class EventServiceImpl implements EventService {
                                 .map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList()))
                         .build();
             default:
-                throw new UncorrectedParametersException("Некорректный статус - " + status);
+                throw new IncorrectParametersException("Некорректный статус - " + status);
         }
     }
 
@@ -293,7 +293,7 @@ public class EventServiceImpl implements EventService {
 
         if (searchEventParams.getRangeEnd() != null && searchEventParams.getRangeStart() != null) {
             if (searchEventParams.getRangeEnd().isBefore(searchEventParams.getRangeStart())) {
-                throw new UncorrectedParametersException("Дата окончания не может быть раньше даты начала");
+                throw new IncorrectParametersException("Дата окончания не может быть раньше даты начала");
             }
         }
 
@@ -391,7 +391,7 @@ public class EventServiceImpl implements EventService {
 
     private void checkDateAndTime(LocalDateTime time, LocalDateTime dateTime) {
         if (dateTime.isBefore(time.plusHours(2))) {
-            throw new UncorrectedParametersException("Поле должно содержать дату, которая еще не наступила.");
+            throw new IncorrectParametersException("Поле должно содержать дату, которая еще не наступила.");
         }
     }
 

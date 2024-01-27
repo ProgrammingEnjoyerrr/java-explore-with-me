@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.ewm.dto.ParticipationRequestDto;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
-import ru.practicum.ewm.exception.UncorrectedParametersException;
+import ru.practicum.ewm.exception.IncorrectParametersException;
 import ru.practicum.ewm.model.Event;
 import ru.practicum.ewm.model.Request;
 import ru.practicum.ewm.model.User;
@@ -69,7 +69,7 @@ public class RequestServiceImpl implements RequestService {
         Request request = requestRepository.findByIdAndRequesterId(requestId, userId).orElseThrow(
                 () -> new NotFoundException("Запрос с id= " + requestId + " не найден"));
         if (request.getStatus().equals(RequestStatus.CANCELED) || request.getStatus().equals(RequestStatus.REJECTED)) {
-            throw new UncorrectedParametersException("Запрос не подтвержден");
+            throw new IncorrectParametersException("Запрос не подтвержден");
         }
         request.setStatus(RequestStatus.CANCELED);
         Request requestAfterSave = requestRepository.save(request);
