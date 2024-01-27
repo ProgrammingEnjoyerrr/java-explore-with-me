@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.ewm.dto.NewUserRequest;
+import ru.practicum.ewm.dto.NewUserRequestDto;
 import ru.practicum.ewm.dto.UserDto;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.model.User;
@@ -23,8 +23,8 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public UserDto addNewUser(NewUserRequest newUserRequest) {
-        User user = userRepository.save(UserMapper.toUser(newUserRequest));
+    public UserDto addNewUser(NewUserRequestDto newUserRequestDto) {
+        User user = userRepository.save(UserMapper.toUser(newUserRequestDto));
         return UserMapper.toUserDto(user);
     }
 
@@ -40,8 +40,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> getListUsers(List<Long> ids, Integer from, Integer size) {
         PageRequest page = PageRequest.of(from / size, size);
-        return (ids != null) ? userRepository.findByIdIn(ids, page)
-                .stream().map(UserMapper::toUserDto).collect(Collectors.toList()) : userRepository.findAll(page)
-                .stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+        return (ids != null) ?
+                userRepository.findByIdIn(ids, page).stream()
+                        .map(UserMapper::toUserDto)
+                        .collect(Collectors.toList())
+                :
+                userRepository.findAll(page).stream()
+                        .map(UserMapper::toUserDto)
+                        .collect(Collectors.toList());
     }
 }

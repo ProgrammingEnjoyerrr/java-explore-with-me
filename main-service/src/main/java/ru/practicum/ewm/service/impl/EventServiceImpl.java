@@ -53,16 +53,16 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public List<EventFullDto> getAllEventFromAdmin(SearchEventParamsAdmin searchEventParamsAdmin) {
-        PageRequest pageable = PageRequest.of(searchEventParamsAdmin.getFrom() / searchEventParamsAdmin.getSize(),
-                searchEventParamsAdmin.getSize());
+    public List<EventFullDto> getAllEventFromAdmin(SearchEventParamsAdminDto searchEventParamsAdminDto) {
+        PageRequest pageable = PageRequest.of(searchEventParamsAdminDto.getFrom() / searchEventParamsAdminDto.getSize(),
+                searchEventParamsAdminDto.getSize());
         Specification<Event> specification = Specification.where(null);
 
-        List<Long> users = searchEventParamsAdmin.getUsers();
-        List<String> states = searchEventParamsAdmin.getStates();
-        List<Long> categories = searchEventParamsAdmin.getCategories();
-        LocalDateTime rangeEnd = searchEventParamsAdmin.getRangeEnd();
-        LocalDateTime rangeStart = searchEventParamsAdmin.getRangeStart();
+        List<Long> users = searchEventParamsAdminDto.getUsers();
+        List<String> states = searchEventParamsAdminDto.getStates();
+        List<Long> categories = searchEventParamsAdminDto.getCategories();
+        LocalDateTime rangeEnd = searchEventParamsAdminDto.getRangeEnd();
+        LocalDateTime rangeStart = searchEventParamsAdminDto.getRangeStart();
 
         if (users != null && !users.isEmpty()) {
             specification = specification.and((root, query, criteriaBuilder) ->
@@ -86,8 +86,9 @@ public class EventServiceImpl implements EventService {
         }
         Page<Event> events = eventRepository.findAll(specification, pageable);
 
-        List<EventFullDto> result = events.getContent()
-                .stream().map(EventMapper::toEventFullDto).collect(Collectors.toList());
+        List<EventFullDto> result = events.getContent().stream()
+                .map(EventMapper::toEventFullDto)
+                .collect(Collectors.toList());
 
         Map<Long, List<Request>> confirmedRequestsCountMap = getConfirmedRequestsCount(events.toList());
         for (EventFullDto event : result) {
@@ -99,7 +100,7 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public EventFullDto updateEventFromAdmin(Long eventId, UpdateEventAdminRequest updateEvent) {
+    public EventFullDto updateEventFromAdmin(Long eventId, UpdateEventAdminRequestDtoDto updateEvent) {
         Event oldEvent = checkEvent(eventId);
         if (oldEvent.getEventStatus().equals(EventStatus.PUBLISHED) || oldEvent.getEventStatus().equals(EventStatus.CANCELED)) {
             throw new ConflictException("Можно изменить только неподтвержденное событие");
@@ -139,7 +140,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventFullDto updateEventByUserIdAndEventId(Long userId, Long eventId, UpdateEventUserRequest inputUpdate) {
+    public EventFullDto updateEventByUserIdAndEventId(Long userId, Long eventId, UpdateEventUserRequestDto inputUpdate) {
         checkUser(userId);
         Event oldEvent = checkEvenByInitiatorAndEventId(userId, eventId);
         if (oldEvent.getEventStatus().equals(EventStatus.PUBLISHED)) {
@@ -232,7 +233,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public EventRequestStatusUpdateResult updateStatusRequest(Long userId, Long eventId, EventRequestStatusUpdateRequest inputUpdate) {
+    public EventRequestStatusUpdateResultDto updateStatusRequest(Long userId, Long eventId, EventRequestStatusUpdateRequestDto inputUpdate) {
         checkUser(userId);
         Event event = checkEvenByInitiatorAndEventId(userId, eventId);
 
@@ -259,7 +260,7 @@ public class EventServiceImpl implements EventService {
                     rejectedRequests = rejectRequest(ids, eventId);
                 }
 
-                return EventRequestStatusUpdateResult.builder()
+                return EventRequestStatusUpdateResultDto.builder()
                         .confirmedRequests(confirmedRequests
                                 .stream()
                                 .map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList()))
@@ -278,7 +279,7 @@ public class EventServiceImpl implements EventService {
                         RequestStatus.REJECTED, confirmedRequestsCount);
                 List<Request> rejectRequest = requestRepository.findAllById(updatedStatusReject.getProcessedIds());
 
-                return EventRequestStatusUpdateResult.builder()
+                return EventRequestStatusUpdateResultDto.builder()
                         .rejectedRequests(rejectRequest
                                 .stream()
                                 .map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList()))
@@ -289,23 +290,23 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<EventShortDto> getAllEventFromPublic(SearchEventParams searchEventParams, HttpServletRequest request) {
+    public List<EventShortDto> getAllEventFromPublic(SearchEventParamsDto searchEventParamsDto, HttpServletRequest request) {
 
-        if (searchEventParams.getRangeEnd() != null && searchEventParams.getRangeStart() != null) {
-            if (searchEventParams.getRangeEnd().isBefore(searchEventParams.getRangeStart())) {
+        if (searchEventParamsDto.getRangeEnd() != null && searchEventParamsDto.getRangeStart() != null) {
+            if (searchEventParamsDto.getRangeEnd().isBefore(searchEventParamsDto.getRangeStart())) {
                 throw new IncorrectParametersException("Дата окончания не может быть раньше даты начала");
             }
         }
 
         addStatsClient(request);
 
-        Pageable pageable = PageRequest.of(searchEventParams.getFrom() / searchEventParams.getSize(), searchEventParams.getSize());
+        Pageable pageable = PageRequest.of(searchEventParamsDto.getFrom() / searchEventParamsDto.getSize(), searchEventParamsDto.getSize());
 
         Specification<Event> specification = Specification.where(null);
         LocalDateTime now = LocalDateTime.now();
 
-        if (searchEventParams.getText() != null) {
-            String searchText = searchEventParams.getText().toLowerCase();
+        if (searchEventParamsDto.getText() != null) {
+            String searchText = searchEventParamsDto.getText().toLowerCase();
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.or(
                             criteriaBuilder.like(criteriaBuilder.lower(root.get("annotation")), "%" + searchText + "%"),
@@ -313,21 +314,21 @@ public class EventServiceImpl implements EventService {
                     ));
         }
 
-        if (searchEventParams.getCategories() != null && !searchEventParams.getCategories().isEmpty()) {
+        if (searchEventParamsDto.getCategories() != null && !searchEventParamsDto.getCategories().isEmpty()) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    root.get("category").get("id").in(searchEventParams.getCategories()));
+                    root.get("category").get("id").in(searchEventParamsDto.getCategories()));
         }
 
-        LocalDateTime startDateTime = Objects.requireNonNullElse(searchEventParams.getRangeStart(), now);
+        LocalDateTime startDateTime = Objects.requireNonNullElse(searchEventParamsDto.getRangeStart(), now);
         specification = specification.and((root, query, criteriaBuilder) ->
                 criteriaBuilder.greaterThan(root.get("eventDate"), startDateTime));
 
-        if (searchEventParams.getRangeEnd() != null) {
+        if (searchEventParamsDto.getRangeEnd() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
-                    criteriaBuilder.lessThan(root.get("eventDate"), searchEventParams.getRangeEnd()));
+                    criteriaBuilder.lessThan(root.get("eventDate"), searchEventParamsDto.getRangeEnd()));
         }
 
-        if (searchEventParams.getOnlyAvailable() != null) {
+        if (searchEventParamsDto.getOnlyAvailable() != null) {
             specification = specification.and((root, query, criteriaBuilder) ->
                     criteriaBuilder.greaterThanOrEqualTo(root.get("participantLimit"), 0));
         }
@@ -482,7 +483,7 @@ public class EventServiceImpl implements EventService {
         return requests.stream().collect(Collectors.groupingBy(r -> r.getEvent().getId()));
     }
 
-    private Event universalUpdate(Event oldEvent, UpdateEventRequest updateEvent) {
+    private Event universalUpdate(Event oldEvent, UpdateEventRequestDto updateEvent) {
         boolean hasChanges = false;
         String gotAnnotation = updateEvent.getAnnotation();
         if (gotAnnotation != null && !gotAnnotation.isBlank()) {

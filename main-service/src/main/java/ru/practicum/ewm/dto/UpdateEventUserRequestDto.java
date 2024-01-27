@@ -10,7 +10,7 @@ import ru.practicum.ewm.model.enums.EventUserState;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateEventUserRequest extends UpdateEventRequest {
+public class UpdateEventUserRequestDto extends UpdateEventRequestDto {
 
     private EventUserState stateAction;
 }

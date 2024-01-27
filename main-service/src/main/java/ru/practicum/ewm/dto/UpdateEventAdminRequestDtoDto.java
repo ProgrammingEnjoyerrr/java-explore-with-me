@@ -10,7 +10,7 @@ import ru.practicum.ewm.model.enums.EventAdminState;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpdateEventAdminRequest extends UpdateEventRequest {
+public class UpdateEventAdminRequestDtoDto extends UpdateEventRequestDto {
 
     private EventAdminState stateAction;
 }

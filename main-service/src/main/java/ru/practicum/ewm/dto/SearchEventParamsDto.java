@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SearchEventParams {
+public class SearchEventParamsDto {
     private String text;
     private List<Long> categories;
     private Boolean paid;

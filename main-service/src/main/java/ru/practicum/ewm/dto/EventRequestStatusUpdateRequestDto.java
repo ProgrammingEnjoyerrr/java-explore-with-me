@@ -11,7 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class EventRequestStatusUpdateRequest {
+public class EventRequestStatusUpdateRequestDto {
     private Set<Long> requestIds;
     private RequestStatus status;
 }

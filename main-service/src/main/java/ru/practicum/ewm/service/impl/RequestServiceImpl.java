@@ -60,7 +60,9 @@ public class RequestServiceImpl implements RequestService {
     public List<ParticipationRequestDto> getRequestsByUserId(Long userId) {
         checkUser(userId);
         List<Request> result = requestRepository.findAllByRequesterId(userId);
-        return result.stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
+        return result.stream()
+                .map(RequestMapper::toParticipationRequestDto)
+                .collect(Collectors.toList());
     }
 
     @Override
