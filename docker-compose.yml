@@ -1,49 +1,52 @@
 version: '3.1'
 services:
-  stats-server:
-    build: stats-service/server
-    image: stats-server-image
-    container_name: stats-server
+  stat-server:
+    build: ./stat-service/server
+    image: stat-service
+    container_name: server
     ports:
       - "9090:9090"
     depends_on:
-      - stats-db
+      - statdb
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://stats-db:5432/stats-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://statdb:5432/statdb
       - SPRING_DATASOURCE_USERNAME=ewm
       - SPRING_DATASOURCE_PASSWORD=ewm
+      - JAVA_OPTS=-Djdk.httpclient.HttpClient.log=errors,requests
 
-  stats-db:
+  statdb:
     image: postgres:14-alpine
-    container_name: stats-db
-    ports:
-      - "5432:5432"
+    volumes:
+      - /var/lib/postgresql/data/
+    container_name: statdb
+
     environment:
-      - POSTGRES_DB=stats-db
+      - POSTGRES_DB=statdb
       - POSTGRES_USER=ewm
       - POSTGRES_PASSWORD=ewm
 
-  ewm-service:
-    build: main-service
-    image: ewm-main-service-image
-    container_name: ewm-main-service
+  main-service:
+    build: ./main-service
+    image: main-service
+    container_name: main-service
     ports:
       - "8080:8080"
     depends_on:
-      - ewm-db
-      - stats-server
+      - ewmdb
+      - stat-server
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewm-db:5432/ewm-db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://ewmdb:5432/ewmdb
       - SPRING_DATASOURCE_USERNAME=ewm
       - SPRING_DATASOURCE_PASSWORD=ewm
-      - STATS_SERVER_URL=http://server:9090
+      - SERVICES_STATSSERVICE_URI=http://stat-server:9090
+    #   - JAVA_OPTS=-Djdk.httpclient.HttpClient.log=errors,requests
 
-  ewm-db:
+  ewmdb:
     image: postgres:14-alpine
-    container_name: ewm-db
-    ports:
-      - "6542:5432"
+    volumes:
+      - /var/lib/postgresql/data/
+    container_name: ewmdb
     environment:
-      - POSTGRES_DB=ewm-db
+      - POSTGRES_DB=ewmdb
       - POSTGRES_USER=ewm
       - POSTGRES_PASSWORD=ewm
