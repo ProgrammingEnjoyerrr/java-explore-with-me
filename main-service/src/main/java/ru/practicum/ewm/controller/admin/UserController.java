@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.ewm.dto.NewUserRequest;
+import ru.practicum.ewm.dto.NewUserRequestDto;
 import ru.practicum.ewm.dto.UserDto;
 import ru.practicum.ewm.service.UserService;
 
@@ -33,9 +33,9 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public UserDto addUser(@RequestBody @Valid NewUserRequest newUserRequest) {
+    public UserDto addUser(@RequestBody @Valid NewUserRequestDto newUserRequestDto) {
         log.info("POST запрос на создание пользователя");
-        return userService.addNewUser(newUserRequest);
+        return userService.addNewUser(newUserRequestDto);
     }
 
     @DeleteMapping("/{userId}")

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.ewm.dto.EventFullDto;
 import ru.practicum.ewm.dto.EventShortDto;
-import ru.practicum.ewm.dto.SearchEventParams;
+import ru.practicum.ewm.dto.SearchEventParamsDto;
 import ru.practicum.ewm.service.EventService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,10 +26,10 @@ public class EventPublicController {
     private final EventService eventService;
 
     @GetMapping
-    public List<EventShortDto> getAllEvents(@Valid SearchEventParams searchEventParams,
+    public List<EventShortDto> getAllEvents(@Valid SearchEventParamsDto searchEventParamsDto,
                                             HttpServletRequest request) {
         log.info("GET запрос на получения событий с фильтром");
-        return eventService.getAllEventFromPublic(searchEventParams, request);
+        return eventService.getAllEventFromPublic(searchEventParamsDto, request);
     }
 
     @GetMapping("/{eventId}")

@@ -50,7 +50,7 @@ public class EventPrivateController {
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventByOwner(@PathVariable(value = "userId") @Min(0) Long userId,
                                            @PathVariable(value = "eventId") @Min(0) Long eventId,
-                                           @RequestBody @Valid UpdateEventUserRequest inputUpdate) {
+                                           @RequestBody @Valid UpdateEventUserRequestDto inputUpdate) {
         log.info("PATCH запрос на обновление события от пользователя с id= {}", userId);
         return eventService.updateEventByUserIdAndEventId(userId, eventId, inputUpdate);
     }
@@ -63,9 +63,9 @@ public class EventPrivateController {
     }
 
     @PatchMapping("/{eventId}/requests")
-    public EventRequestStatusUpdateResult updateStatusRequestFromOwner(@PathVariable(value = "userId") @Min(1) Long userId,
-                                                                       @PathVariable(value = "eventId") @Min(1) Long eventId,
-                                                                       @RequestBody EventRequestStatusUpdateRequest inputUpdate) {
+    public EventRequestStatusUpdateResultDto updateStatusRequestFromOwner(@PathVariable(value = "userId") @Min(1) Long userId,
+                                                                          @PathVariable(value = "eventId") @Min(1) Long eventId,
+                                                                          @RequestBody EventRequestStatusUpdateRequestDto inputUpdate) {
         log.info("PATCH запрос на обновление статуса события от пользователя с id= {}", userId);
         return eventService.updateStatusRequest(userId, eventId, inputUpdate);
     }
