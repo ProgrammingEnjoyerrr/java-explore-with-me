@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
@@ -37,6 +36,7 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(userId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<UserDto> getListUsers(List<Long> ids, Integer from, Integer size) {
         PageRequest page = PageRequest.of(from / size, size);

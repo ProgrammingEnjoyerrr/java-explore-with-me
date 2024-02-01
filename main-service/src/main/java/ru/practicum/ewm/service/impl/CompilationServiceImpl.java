@@ -71,6 +71,7 @@ public class CompilationServiceImpl implements CompilationService {
         compilationRepository.deleteById(compId);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
 
@@ -88,6 +89,7 @@ public class CompilationServiceImpl implements CompilationService {
     }
 
 
+    @Transactional(readOnly = true)
     @Override
     public CompilationDto findByIdCompilation(Long compId) {
         return CompilationMapper.toDto(checkCompilation(compId));

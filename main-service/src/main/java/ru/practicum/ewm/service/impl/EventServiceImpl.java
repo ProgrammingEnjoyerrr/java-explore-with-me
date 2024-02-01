@@ -12,6 +12,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.ewm.EndpointHit;
 import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.ViewStats;
@@ -52,6 +53,7 @@ public class EventServiceImpl implements EventService {
     private String applicationName;
 
 
+    @Transactional(readOnly = true)
     @Override
     public List<EventFullDto> getAllEventFromAdmin(SearchEventParamsAdminDto searchEventParamsAdminDto) {
         PageRequest pageable = PageRequest.of(searchEventParamsAdminDto.getFrom() / searchEventParamsAdminDto.getSize(),
@@ -99,6 +101,7 @@ public class EventServiceImpl implements EventService {
     }
 
 
+    @Transactional
     @Override
     public EventFullDto updateEventFromAdmin(Long eventId, UpdateEventAdminRequestDtoDto updateEvent) {
         Event oldEvent = checkEvent(eventId);
@@ -139,6 +142,7 @@ public class EventServiceImpl implements EventService {
         return eventAfterUpdate != null ? EventMapper.toEventFullDto(eventAfterUpdate) : null;
     }
 
+    @Transactional
     @Override
     public EventFullDto updateEventByUserIdAndEventId(Long userId, Long eventId, UpdateEventUserRequestDto inputUpdate) {
         checkUser(userId);
@@ -183,6 +187,7 @@ public class EventServiceImpl implements EventService {
         return eventAfterUpdate != null ? EventMapper.toEventFullDto(eventAfterUpdate) : null;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<EventShortDto> getEventsByUserId(Long userId, Integer from, Integer size) {
         if (!userRepository.existsById(userId)) {
@@ -193,6 +198,7 @@ public class EventServiceImpl implements EventService {
                 .stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     @Override
     public EventFullDto getEventByUserIdAndEventId(Long userId, Long eventId) {
         checkUser(userId);
@@ -200,6 +206,7 @@ public class EventServiceImpl implements EventService {
         return EventMapper.toEventFullDto(event);
     }
 
+    @Transactional
     @Override
     public EventFullDto addNewEvent(Long userId, NewEventDto eventDto) {
         LocalDateTime createdOn = LocalDateTime.now();
@@ -224,6 +231,7 @@ public class EventServiceImpl implements EventService {
     }
 
 
+    @Transactional(readOnly = true)
     @Override
     public List<ParticipationRequestDto> getAllParticipationRequestsFromEventByOwner(Long userId, Long eventId) {
         checkUser(userId);
@@ -232,6 +240,7 @@ public class EventServiceImpl implements EventService {
         return requests.stream().map(RequestMapper::toParticipationRequestDto).collect(Collectors.toList());
     }
 
+    @Transactional
     @Override
     public EventRequestStatusUpdateResultDto updateStatusRequest(Long userId, Long eventId, EventRequestStatusUpdateRequestDto inputUpdate) {
         checkUser(userId);
@@ -289,6 +298,7 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<EventShortDto> getAllEventFromPublic(SearchEventParamsDto searchEventParamsDto, HttpServletRequest request) {
 
@@ -349,6 +359,7 @@ public class EventServiceImpl implements EventService {
         return result;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public EventFullDto getEventById(Long eventId, HttpServletRequest request) {
         Event event = checkEvent(eventId);
