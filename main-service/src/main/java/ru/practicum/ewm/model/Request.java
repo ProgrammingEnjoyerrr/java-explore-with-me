@@ -20,10 +20,12 @@ public class Request {
     @Column(name = "create_date", nullable = false)
     private LocalDateTime created;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "requester_id")
     private User requester;

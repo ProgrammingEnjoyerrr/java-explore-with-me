@@ -1,9 +1,6 @@
 package ru.practicum.ewm.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.ewm.model.enums.EventStatus;
 
 import javax.persistence.*;
@@ -22,6 +19,7 @@ public class Event {
     @Column(name = "annotation", nullable = false, length = 2000)
     private String annotation;
 
+    @ToString.Exclude
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
@@ -35,10 +33,12 @@ public class Event {
     @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
 
+    @ToString.Exclude
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "initiator_id")
     private User initiator;
 
+    @ToString.Exclude
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "location_id")
     private Location location;
