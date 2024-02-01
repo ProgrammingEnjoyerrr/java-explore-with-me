@@ -21,6 +21,8 @@ public class StatsServiceImpl implements StatsService {
 
     @Override
     public List<ViewStats> getViewStatsList(ViewsStatsRequest request) {
+        DatesValidator.validate(request.getStart(), request.getEnd());
+
         if (request.isUnique()) {
             return statRepository.getUniqueStats(request);
         }
