@@ -1,7 +1,11 @@
 package ru.practicum.ewm.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.Builder;
 
 import java.time.LocalDateTime;
 
@@ -21,4 +25,5 @@ public class EventShortDto {
     private Boolean paid;
     private String title;
     private Long views;
+    private Long comments;
 }

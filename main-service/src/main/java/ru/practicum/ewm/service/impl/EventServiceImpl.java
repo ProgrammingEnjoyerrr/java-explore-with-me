@@ -17,6 +17,7 @@ import ru.practicum.ewm.EndpointHit;
 import ru.practicum.ewm.StatsClient;
 import ru.practicum.ewm.ViewStats;
 import ru.practicum.ewm.dto.*;
+import ru.practicum.ewm.dto.CommentsCountByEventDto;
 import ru.practicum.ewm.exception.ConflictException;
 import ru.practicum.ewm.exception.NotFoundException;
 import ru.practicum.ewm.exception.IncorrectParametersException;
@@ -47,6 +48,7 @@ public class EventServiceImpl implements EventService {
     private final RequestRepository requestRepository;
     private final LocationRepository locationRepository;
     private final ObjectMapper objectMapper;
+    private final CommentRepository commentRepository;
 
 
     @Value("${server.application.name:ewm-service}")
@@ -351,9 +353,19 @@ public class EventServiceImpl implements EventService {
                 .stream().map(EventMapper::toEventShortDto).collect(Collectors.toList());
         Map<Long, Long> viewStatsMap = getViewsAllEvents(resultEvents);
 
+        final List<CommentsCountByEventDto> commentsCountMap = commentRepository.countCommentByEvent(
+                resultEvents.stream()
+                        .map(Event::getId)
+                        .collect(Collectors.toList()));
+        final Map<Long, Long> commentsCountToEventIdMap = commentsCountMap.stream()
+                .collect(Collectors.toMap(CommentsCountByEventDto::getEventId, CommentsCountByEventDto::getCommentsCount));
+
         for (EventShortDto event : result) {
             Long viewsFromMap = viewStatsMap.getOrDefault(event.getId(), 0L);
             event.setViews(viewsFromMap);
+
+            final Long commentCountFromMap = commentsCountToEventIdMap.getOrDefault(event.getId(), 0L);
+            event.setComments(commentCountFromMap);
         }
 
         return result;

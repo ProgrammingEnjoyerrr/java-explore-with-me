@@ -33,4 +33,5 @@ build/
 .vscode/
 
 ### Postman ###
-postman/
+postman/ewm-main-service.json
+postman/ewm-stat-service.json
