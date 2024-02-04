@@ -1,6 +1,10 @@
 package ru.practicum.ewm.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Data;
+import lombok.Builder;
+import lombok.ToString;
 import ru.practicum.ewm.model.enums.EventStatus;
 
 import javax.persistence.*;
