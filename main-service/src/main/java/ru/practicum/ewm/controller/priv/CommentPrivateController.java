@@ -15,14 +15,14 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/comments")
+@RequestMapping(path = "/comments/users/{userId}")
 @RequiredArgsConstructor
 @Validated
 @Slf4j
 public class CommentPrivateController {
     private final CommentService commentService;
 
-    @PostMapping("/users/{userId}/events/{eventId}")
+    @PostMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto createComment(@PathVariable Long userId,
                                     @PathVariable Long eventId,
@@ -31,7 +31,7 @@ public class CommentPrivateController {
         return commentService.createComment(userId, eventId, newCommentDto);
     }
 
-    @PatchMapping("/users/{userId}/{commentId}")
+    @PatchMapping("/{commentId}")
     public CommentDto updateComment(@PathVariable Long userId, @PathVariable Long commentId,
                                     @Valid @RequestBody UpdateCommentDto updateCommentDto) {
 
@@ -39,20 +39,20 @@ public class CommentPrivateController {
         return commentService.updateComment(userId, commentId, updateCommentDto);
     }
 
-    @GetMapping("/users/{userId}/comments")
+    @GetMapping("/comments")
     public List<CommentDto> getComments(@PathVariable Long userId) {
         log.info("GET запрос на получение комментариев пользователя с userId = {} ", userId);
         return commentService.getComments(userId);
     }
 
-    @DeleteMapping("/users/{userId}/{commentId}")
+    @DeleteMapping("/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteComment(@PathVariable Long userId, @PathVariable Long commentId) {
         log.info("DELETE запрос на удаление комментария id = {} пользователем id = {} ", userId, commentId);
         commentService.deleteComment(userId, commentId);
     }
 
-    @GetMapping("/users/{userId}/{commentId}")
+    @GetMapping("/{commentId}")
     public Comment getComment(@PathVariable Long userId, @PathVariable Long commentId) {
         log.info("GET запрос на получения комментария id = {} пользователем id = {} ", commentId, userId);
         return commentService.getCommentByUserAndCommentId(userId, commentId);
